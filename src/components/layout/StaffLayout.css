@@ -1,0 +1,103 @@
+.staff-shell {
+  min-height: 100vh;
+  background: #f8fafc;
+}
+
+.staff-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 24px;
+  background: #0f172a;
+  color: #fff;
+  box-sizing: border-box;
+}
+
+.staff-brand {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.staff-role {
+  margin-top: 8px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.staff-nav {
+  display: grid;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.staff-nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease, transform 0.18s ease;
+}
+
+.staff-nav a:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateX(2px);
+}
+
+.staff-logout {
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  background: #334155;
+  color: #fff;
+  cursor: pointer;
+}
+
+.staff-main {
+  margin-left: 260px;
+  min-height: 100vh;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.staff-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  background: #f8fafc;
+}
+
+.staff-header h1 {
+  margin: 0;
+}
+
+.staff-user {
+  background: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+}
+
+@media (max-width: 900px) {
+  .staff-sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+  }
+
+  .staff-main {
+    margin-left: 0;
+    width: 100%;
+  }
+}
