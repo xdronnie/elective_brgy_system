@@ -255,8 +255,8 @@ function renderBusinessClearance(data) {
         Barangay Treasurer
         <br /><br /><br />
         Approved:<br /><br />
-        <strong>${escapeHtml(data.approvedBy || data.punongBarangay || "")}</strong><br />
-        Punong Barangay
+    <strong>${escapeHtml(data.punongBarangay || "")}</strong><br />
+Punong Barangay
       </div>
       ${renderFooterMeta(data)}
     `
@@ -289,8 +289,8 @@ function renderBarangayClearance(data) {
       </p>
       <div class="signature-block">
         Approved:<br /><br />
-        <strong>${escapeHtml(data.approvedBy || data.punongBarangay || "")}</strong><br />
-        Punong Barangay
+   <strong>${escapeHtml(data.punongBarangay || "")}</strong><br />
+Punong Barangay
       </div>
       ${renderFooterMeta(data)}
     `
@@ -315,8 +315,8 @@ function renderFirstTimeJobseeker(data) {
       </p>
       <div class="signature-block">
         Approved:<br /><br />
-        <strong>${escapeHtml(data.approvedBy || data.punongBarangay || "")}</strong><br />
-        Punong Barangay
+    <strong>${escapeHtml(data.approvedBy || data.punongBarangay || "")}</strong><br />
+Punong Barangay
       </div>
     `
   );
@@ -339,8 +339,8 @@ function renderGoodMoral(data) {
         This certification is issued for <strong>${escapeHtml(data.purpose)}</strong>.
       </p>
       <div class="signature-block">
-        <strong>${escapeHtml(data.approvedBy || data.punongBarangay || "")}</strong><br />
-        Punong Barangay
+    <strong>${escapeHtml(data.punongBarangay || "")}</strong><br />
+Punong Barangay
       </div>
     `
   );
@@ -365,8 +365,8 @@ function renderIndigency(data) {
         This certification is issued for <strong>${escapeHtml(data.purpose)}</strong>.
       </p>
       <div class="signature-block">
-        <strong>${escapeHtml(data.approvedBy || data.punongBarangay || "")}</strong><br />
-        Punong Barangay
+      <strong>${escapeHtml(data.punongBarangay || "")}</strong><br />
+Punong Barangay
       </div>
     `
   );
@@ -391,8 +391,8 @@ function renderResidency(data) {
         This certification is issued for <strong>${escapeHtml(data.purpose)}</strong>.
       </p>
       <div class="signature-block">
-        <strong>${escapeHtml(data.approvedBy || data.punongBarangay || "")}</strong><br />
-        Punong Barangay
+    <strong>${escapeHtml(data.punongBarangay || "")}</strong><br />
+Punong Barangay
       </div>
       ${renderFooterMeta(data)}
     `

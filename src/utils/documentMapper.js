@@ -7,13 +7,13 @@ const BARANGAY_CONTEXT = {
   municipality: "Pinili",
   barangay: "Upon",
   office: "OFFICE OF THE PUNONG BARANGAY",
-  punongBarangay: "HON. LEONARDO P. BLANCO",
-  barangayTreasurer: "LARRY B. BAGAYAS",
-  barangaySecretary: "ERWIN F. BAGAYAS",
-  issuedAtDefault: "Upon, Pinili, Ilocos Norte",
-  preparedByDefault: "LARRY B. BAGAYAS",
-  approvedByDefault: "HON. LEONARDO P. BLANCO",
-  witnessDefault: "HON. JANCENT T. DAGUIMOL",
+  punongBarangay: "",
+  barangayTreasurer: "",
+  barangaySecretary: "",
+  issuedAtDefault: "",
+  preparedByDefault: "",
+  approvedByDefault: "",
+  witnessDefault: "",
 };
 
 export const mapDocumentData = ({

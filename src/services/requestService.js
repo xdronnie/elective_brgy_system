@@ -17,7 +17,7 @@ import { handleAppError } from "../utils/errorHandler";
 import { createAuditLog } from "./auditService";
 import { generateReferenceNumber } from "../utils/referenceNumber";
 import { createNotification } from "./notificationService";
-import { sendRequestEmail } from "./publicEmailService";
+import { sendStatusUpdateEmail } from "./emailService";
 export const createRequest = async ({ data, user = null }) => {
   try {
     const referenceNo = data.referenceNo || generateReferenceNumber();
@@ -163,21 +163,32 @@ export const updateRequestStatus = async ({
         },
       });
     }
-    if (oldData.email) {
-  await sendRequestEmail({
-    to: oldData.email,
-    type: "status_update",
-    applicantName:
-      oldData.fullName ||
-      [oldData.firstName, oldData.middleName, oldData.lastName]
-        .filter(Boolean)
-        .join(" ")
-        .trim(),
+ const recipientEmail = String(oldData.email || "").trim();
+console.log("Status email recipient:", recipientEmail);
+
+if (recipientEmail) {
+  try {
+    await sendStatusUpdateEmail({
+      to: recipientEmail,
+      applicantName:
+        oldData.fullName ||
+        [oldData.firstName, oldData.middleName, oldData.lastName]
+          .filter(Boolean)
+          .join(" ")
+          .trim(),
+      referenceNo: oldData.referenceNo || "",
+      documentType: oldData.documentType || "",
+      status: newStatus,
+      rejectionReason,
+    });
+  } catch (error) {
+    console.error("Status update email failed:", error);
+  }
+} else {
+  console.warn("Status update email skipped: request has no email.", {
+    requestId,
     referenceNo: oldData.referenceNo || "",
-    documentType: oldData.documentType || "",
-    purpose: oldData.purpose || "",
-    status: newStatus,
-    rejectionReason,
+    email: oldData.email,
   });
 }
 

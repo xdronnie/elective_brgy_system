@@ -1,33 +1,16 @@
-export const sendRequestEmail = async ({
-  to,
-  type,
-  applicantName,
-  referenceNo,
-  documentType,
-  purpose,
-  status,
-  rejectionReason = "",
-}) => {
+const API_BASE_URL = import.meta.env.VITE_MAILER_API_URL || "";
+
+export const sendRequestEmail = async (payload) => {
   try {
-    const response = await fetch("http://localhost:3001/send-request-email", {
+    const response = await fetch(API_BASE_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        to,
-        type,
-        applicantName,
-        referenceNo,
-        documentType,
-        purpose,
-        status,
-        rejectionReason,
-      }),
+      body: JSON.stringify(payload),
     });
 
-    const result = await response.json();
-    return result;
+    return await response.json();
   } catch (error) {
     console.error("sendRequestEmail error:", error);
     return {

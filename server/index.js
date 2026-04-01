@@ -1,13 +1,15 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import nodemailer from "nodemailer";
-console.log("MAIL_USER:", process.env.MAIL_USER);
-console.log("MAIL_APP_PASSWORD exists:", !!process.env.MAIL_APP_PASSWORD);
-import "dotenv/config";
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+console.log("MAIL_USER:", process.env.MAIL_USER);
+console.log("MAIL_APP_PASSWORD exists:", !!process.env.MAIL_APP_PASSWORD);
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -55,9 +57,7 @@ app.post("/send-request-email", async (req, res) => {
         `Status: ${status || "draft"}\n\n` +
         `Please keep your reference number for tracking.\n\n` +
         `- DocuBay`;
-    }
-
-    if (type === "status_update") {
+    } else if (type === "status_update") {
       subject = `DocuBay Request Update - ${referenceNo || "-"}`;
       text =
         `Hello ${applicantName || "Applicant"},\n\n` +
@@ -67,6 +67,11 @@ app.post("/send-request-email", async (req, res) => {
         `Current Status: ${status || "-"}\n` +
         `${rejectionReason ? `Rejection Reason: ${rejectionReason}\n` : ""}\n` +
         `- DocuBay`;
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email type.",
+      });
     }
 
     await transporter.sendMail({

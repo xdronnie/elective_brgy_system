@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ilocosNorteLocations from "../../../data/ilocosNorteLocations.json";
 import { createRequest } from "../../../services/requestService";
 import "./RequestForm.css";
-import { sendRequestEmail } from "../../../services/publicEmailService";
+import { sendSubmittedEmail } from "../../../services/emailService";
 
 const DOCUMENT_OPTIONS = [
   { value: "barangay_clearance", label: "Barangay Clearance" },
@@ -210,15 +210,18 @@ export default function RequestForm() {
       return;
     }
 
-    await sendRequestEmail({
-  to: payload.email,
-  type: "submitted",
-  applicantName: payload.fullName,
-  referenceNo: result.referenceNo,
-  documentType: payload.documentType,
-  purpose: payload.purpose,
-  status: "draft",
-});
+ try {
+  await sendSubmittedEmail({
+    to: payload.email,
+    applicantName: payload.fullName,
+    referenceNo: result.referenceNo,
+    documentType: payload.documentType,
+    purpose: payload.purpose,
+    status: "pending",
+  });
+} catch (error) {
+  console.error("Submitted email failed:", error);
+}
 
     setSubmitSuccess(
       `Request submitted successfully. Reference No: ${result.referenceNo || ""}`
