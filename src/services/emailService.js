@@ -46,6 +46,8 @@ export async function sendSubmittedEmail({
   documentType,
   purpose,
   status = "pending",
+  statusUrl = "",
+  familyRequestUrl = "",
 }) {
   validateRequiredFields({
     to,
@@ -62,6 +64,8 @@ export async function sendSubmittedEmail({
     document_type: documentType,
     purpose,
     status,
+    status_url: statusUrl,
+    family_request_url: familyRequestUrl,
   });
 }
 
@@ -72,6 +76,8 @@ export async function sendStatusUpdateEmail({
   documentType,
   status,
   rejectionReason = "",
+  statusUrl = "",
+  familyRequestUrl = "",
 }) {
   validateRequiredFields({
     to,
@@ -88,5 +94,7 @@ export async function sendStatusUpdateEmail({
     document_type: documentType,
     status,
     rejection_reason: rejectionReason,
+    status_url: statusUrl,
+    family_request_url: familyRequestUrl,
   });
 }

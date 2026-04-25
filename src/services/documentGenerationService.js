@@ -1,12 +1,15 @@
-// src/services/documentGenerationService.js
-import {  addDoc,
+import {
+  addDoc,
   collection,
   doc,
+
   getDocs,
   orderBy,
   query,
+  runTransaction,
   serverTimestamp,
-  updateDoc, } from "firebase/firestore";
+  updateDoc,
+} from "firebase/firestore";
 import { db } from "../firebase/config";
 import { handleAppError } from "../utils/errorHandler";
 import { mapDocumentData } from "../utils/documentMapper";
@@ -39,7 +42,17 @@ export const generateDocument = async ({
     });
 
     validateRequiredFields(template.requiredFields, mappedData);
+    // === AUTO-GENERATE OFFICIAL NUMBERS ===
+    const resCertSeq = await getNextResCertSequence();
+    const resCertNo = generateResCertNo(resCertSeq);
+    const orNo = generateORNo();
+    const feesPaid = getFeesPaid(documentType);
 
+    mappedData.resCertNo = resCertNo;
+    mappedData.orNo = orNo;
+    mappedData.feesPaid = `₱${feesPaid}.00`;
+    mappedData.orDate = new Date().toLocaleDateString('en-PH');
+    // === END GENERATION ===
     const renderedHtml = renderCertificateHtml({
       template,
       data: mappedData,
@@ -64,6 +77,10 @@ export const generateDocument = async ({
       status: "generated_local",
       contentHtml: renderedHtml,
       payload: mappedData,
+      resCertNo,
+      orNo,
+      feesPaid: feesPaid,
+      orDate: mappedData.orDate,
     });
 
     await updateDoc(doc(db, "documentRequests", request.id), {
@@ -124,6 +141,54 @@ export const getGeneratedDocuments = async () => {
     return [];
   }
 };
+function generateORNo() {
+  const date = new Date();
+  const yyyymmdd = date.toISOString().slice(0, 10).replace(/-/g, '');
+  const random = Math.floor(Math.random() * 9000 + 1000);
+  return `${yyyymmdd}-${random}`;
+}
+function getFeesPaid(documentType) {
+  const feeMap = {
+    'barangay_business_clearance': 150,
+    'barangay_clearance': 100,
+    'certificate_of_indigency': 50,
+    'certificate_of_residency': 75,
+    'first_time_jobseeker': 0,   // free under the act
+    'good_moral': 100,
+    // default fallback
+  };
+  return feeMap[documentType] ?? 100;
+}
+
+async function getNextResCertSequence() {
+  const counterRef = doc(db, "counters", "resCertSequence");
+  
+  try {
+    const result = await runTransaction(db, async (transaction) => {
+      const counterDoc = await transaction.get(counterRef);
+      let currentSeq = counterDoc.exists() ? counterDoc.data().value : 0;
+      const nextSeq = currentSeq + 1;
+      transaction.set(counterRef, { value: nextSeq });
+      return nextSeq;
+    });
+    return result;
+  } catch (error) {
+    console.error("Failed to get ResCert sequence:", error);
+    // Fallback: use timestamp as a one-off (not ideal but prevents crash)
+    return Date.now() % 1000000;
+  }
+}
+
+/**
+ * Generate a Residence Certificate Number
+ * Format: YY-XXXXXX (6-digit padding)
+ */
+function generateResCertNo(sequence) {
+  const year = new Date().getFullYear().toString().slice(-2);
+  const padded = sequence.toString().padStart(6, '0');
+  return `${year}-${padded}`;
+}
+
 function validateRequiredFields(requiredFields = [], data = {}) {
   const missing = requiredFields.filter((field) => {
     const value = data[field];

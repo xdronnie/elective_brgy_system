@@ -1,52 +1,104 @@
+/* ========== BASE STYLES (SCREEN & PRINT) ========== */
 .generated-doc-page {
   display: grid;
   gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
 }
 
 .generated-doc-toolbar {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-bottom: 10px;
 }
 
 .generated-doc-card {
   background: #ffffff;
   border-radius: 18px;
-  padding: 22px;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+  padding: 32px 40px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transition: all 0.2s;
 }
 
 .generated-doc-meta {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #e2e8f0;
 }
 
 .generated-doc-meta h2 {
-  margin: 0 0 10px;
-  font-size: 22px;
+  margin: 0 0 12px;
+  font-size: 26px;
+  font-weight: 700;
   color: #0f172a;
+  letter-spacing: -0.3px;
 }
 
 .generated-doc-meta p {
   margin: 6px 0;
-  color: #475569;
+  color: #334155;
+  font-size: 14px;
 }
 
 .generated-doc-preview {
   background: #fff;
   overflow-x: auto;
+  line-height: 1.5;
+  font-family: 'Georgia', 'Times New Roman', Times, serif;
+  font-size: 11pt;
+  color: #1e293b;
 }
 
+/* Rich content styling inside preview (tables, lists, headings) */
+.generated-doc-preview h1,
+.generated-doc-preview h2,
+.generated-doc-preview h3 {
+  font-family: 'Segoe UI', Roboto, sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.6em;
+  color: #0f172a;
+}
+
+.generated-doc-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+  font-family: inherit;
+}
+
+.generated-doc-preview th,
+.generated-doc-preview td {
+  border: 1px solid #cbd5e1;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.generated-doc-preview th {
+  background: #f1f5f9;
+  font-weight: 600;
+}
+
+.generated-doc-preview ul,
+.generated-doc-preview ol {
+  margin: 0.75em 0;
+  padding-left: 1.8em;
+}
+
+/* Buttons */
 .primary-btn,
 .secondary-btn {
   border: none;
   border-radius: 12px;
-  padding: 12px 18px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
-  text-decoration: none;
+  transition: all 0.2s ease;
 }
 
 .primary-btn {
@@ -54,30 +106,115 @@
   color: #ffffff;
 }
 
+.primary-btn:hover {
+  background: #1e293b;
+  transform: translateY(-1px);
+}
+
 .secondary-btn {
   background: #e2e8f0;
   color: #0f172a;
 }
 
+.secondary-btn:hover {
+  background: #cbd5e1;
+}
+
+/* ========== PRINT STYLES – OFFICIAL DOCUMENT ========== */
 @media print {
+  /* Remove all screen-only elements */
   .no-print,
-  .sidebar,
-  .staff-sidebar,
-  .staff-header {
+  .generated-doc-toolbar,
+  .primary-btn,
+  .secondary-btn,
+  button {
     display: none !important;
   }
 
-  .generated-doc-card {
-    box-shadow: none;
-    padding: 0;
-    border-radius: 0;
-  }
-
+  /* Reset body and layout containers */
+  html, body,
+  .staff-shell,
+  .staff-main,
   .generated-doc-page {
-    gap: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    width: 100% !important;
+    display: block !important;
+    box-shadow: none !important;
   }
 
-  body {
-    background: #fff;
+  /* Page size and margins – official document style */
+  @page {
+    size: A4;
+    margin: 2.54cm;  /* standard 1 inch margins for official docs */
+  }
+
+  /* Card becomes the document body */
+  .generated-doc-card {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    width: 100% !important;
+  }
+
+  /* Document meta – like a cover/header */
+  .generated-doc-meta {
+    margin-bottom: 0.75cm !important;
+    padding-bottom: 0.5cm !important;
+    border-bottom: 1px solid #aaa !important;
+  }
+
+  .generated-doc-meta h2 {
+    font-size: 18pt !important;
+    margin-bottom: 6pt !important;
+    color: black !important;
+  }
+
+  .generated-doc-meta p {
+    font-size: 10pt !important;
+    margin: 2pt 0 !important;
+    color: black !important;
+  }
+
+  /* Preview content – official serif font, justified text */
+  .generated-doc-preview {
+    font-family: 'Times New Roman', Georgia, serif !important;
+    font-size: 11pt !important;
+    line-height: 1.4 !important;
+    text-align: justify !important;
+    color: black !important;
+    overflow-x: visible !important;
+  }
+
+  /* Ensure all content uses full width and left alignment for headings */
+  .generated-doc-preview * {
+    max-width: 100% !important;
+  }
+
+  .generated-doc-preview h1,
+  .generated-doc-preview h2,
+  .generated-doc-preview h3 {
+    text-align: left !important;
+    page-break-after: avoid !important;
+    font-family: 'Helvetica', Arial, sans-serif !important;
+  }
+
+  .generated-doc-preview table {
+    page-break-inside: avoid !important;
+    font-size: 10pt !important;
+  }
+
+  .generated-doc-preview img {
+    max-width: 100% !important;
+    page-break-inside: avoid;
+  }
+
+  /* Prevent orphans and widows */
+  .generated-doc-preview p {
+    orphans: 3;
+    widows: 3;
   }
 }

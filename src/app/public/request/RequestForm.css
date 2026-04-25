@@ -398,3 +398,10 @@
   border: 1px solid #bfdbfe;
   box-shadow: none;
 }
+.request-form input:disabled,
+.request-form select:disabled {
+  background: #f3f6fa;
+  color: #5b6b7f;
+  cursor: not-allowed;
+  opacity: 1;
+}

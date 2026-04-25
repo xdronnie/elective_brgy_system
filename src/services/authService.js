@@ -1,4 +1,6 @@
-// src/services/authService.js
+import { sendPasswordResetEmail } from "firebase/auth";
+
+
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -9,6 +11,38 @@ import { doc, getDoc, setDoc, serverTimestamp } from "firebase/firestore";
 import { auth, db } from "../firebase/config";
 import { handleAppError } from "../utils/errorHandler";
 
+export const forgotStaffPassword = async (email) => {
+  try {
+    if (!email?.trim()) {
+      return {
+        success: false,
+        message: "Please enter your email address first.",
+      };
+    }
+
+    await sendPasswordResetEmail(auth, email.trim());
+
+    return {
+      success: true,
+      message: "Password reset email sent. Please check your inbox.",
+    };
+  } catch (error) {
+    console.error("forgotStaffPassword error:", error);
+
+    let message = "Failed to send password reset email.";
+
+    if (error.code === "auth/user-not-found") {
+      message = "No staff account found with that email.";
+    } else if (error.code === "auth/invalid-email") {
+      message = "Invalid email address.";
+    }
+
+    return {
+      success: false,
+      message,
+    };
+  }
+};
 export const registerStaff = async ({
   fullName,
   email,

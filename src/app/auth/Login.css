@@ -162,3 +162,48 @@
     font-size: 26px;
   }
 }
+.login-extra-link {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.request-form-link {
+  display: inline-block;
+  color: #123d73;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.request-form-link:hover {
+  text-decoration: underline;
+}
+.login-success {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #edf8ef;
+  color: #1f6b35;
+  border: 1px solid #b7dfc2;
+  font-weight: 500;
+}
+
+.login-forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.forgot-password-btn {
+  background: none;
+  border: none;
+  color: #123d73;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.forgot-password-btn:hover {
+  text-decoration: underline;
+}

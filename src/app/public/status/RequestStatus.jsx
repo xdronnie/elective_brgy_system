@@ -102,23 +102,30 @@ export default function RequestStatus() {
             </div>
 
             <div className="status-actions-card">
-              <div className="status-actions">
-                {canEdit && (
-                  <Link
-                    to={`/request/edit/${request.id}`}
-                    className="request-top-link"
-                  >
-                    Edit Request
-                  </Link>
-                )}
+           <div className="status-actions">
+  {canEdit && (
+    <Link
+      to={`/request/edit/${request.id}`}
+      className="request-top-link"
+    >
+      Edit Request
+    </Link>
+  )}
 
-                <Link
-                  to="/"
-                  className="request-top-link request-top-link-outline"
-                >
-                  Submit Another Request
-                </Link>
-              </div>
+  <Link
+    to="/"
+    className="request-top-link request-top-link-outline"
+  >
+    Submit Another Request
+  </Link>
+
+  <Link
+    to="/?requestFor=family"
+    className="request-top-link request-top-link-outline"
+  >
+    Request for Family or Relative
+  </Link>
+</div>
             </div>
           </>
         )}

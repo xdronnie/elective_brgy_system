@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import ilocosNorteLocations from "../../../data/ilocosNorteLocations.json";
 import { createRequest } from "../../../services/requestService";
 import "./RequestForm.css";
@@ -13,11 +13,20 @@ const DOCUMENT_OPTIONS = [
   { value: "good_moral", label: "Good Moral Certificate" },
   { value: "first_time_jobseeker", label: "First Time Jobseeker Certificate" },
 ];
-
+const PUROK_OPTIONS = [
+  "Surong A",
+  "Surong B",
+  "Lubong Norte",
+  "Lubong Sur",
+  "Cagoot",
+];
 const CIVIL_STATUS_OPTIONS = ["Single", "Married", "Widowed", "Separated"];
 
 export default function RequestForm() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const isFamilyRequest = searchParams.get("requestFor") === "family";
+
   const [form, setForm] = useState({
     firstName: "",
     middleName: "",
@@ -29,16 +38,17 @@ export default function RequestForm() {
     citizenship: "Filipino",
     contactNumber: "",
     email: "",
-    municipalityId: "",
-    barangayId: "",
+    municipalityId: "Pinili",
+    barangayId: "Upon",
     purok: "",
-    fullAddress: "",
+ 
     documentType: "",
     purpose: "",
     businessName: "",
     businessAddress: "",
     recaptchaVerified: false,
-    requestSource: "public_form",
+    requestSource: isFamilyRequest ? "family_request_form" : "public_form",
+  relationshipToApplicant: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -119,7 +129,6 @@ export default function RequestForm() {
       { key: "municipalityId", label: "Municipality / City" },
       { key: "barangayId", label: "Barangay" },
       { key: "purok", label: "Sitio / Purok" },
-      { key: "fullAddress", label: "Full Address" },
       { key: "documentType", label: "Document Type" },
       { key: "purpose", label: "Purpose" },
     ];
@@ -131,6 +140,12 @@ export default function RequestForm() {
       );
     }
 
+    if (isFamilyRequest) {
+  requiredFields.push({
+    key: "relationshipToApplicant",
+    label: "Relationship to Applicant",
+  });
+}
     const missingField = requiredFields.find(({ key }) => {
       const value = form[key];
       return value === undefined || value === null || String(value).trim() === "";
@@ -164,18 +179,21 @@ export default function RequestForm() {
       form.municipalityId,
       form.barangayId,
       form.purok,
-      form.fullAddress,
+    
       form.documentType,
       form.purpose,
     ];
+      
 
-    const businessFields = isBusinessClearance
-      ? [form.businessName, form.businessAddress]
-      : [];
+ const businessFields = isBusinessClearance
+  ? [form.businessName, form.businessAddress]
+  : [];
 
-    return [...baseFields, ...businessFields].every(
-      (value) => String(value ?? "").trim() !== ""
-    );
+const extraFields = isFamilyRequest ? [form.relationshipToApplicant] : [];
+
+return [...baseFields, ...businessFields, ...extraFields].every(
+  (value) => String(value ?? "").trim() !== ""
+);
   }, [form, isBusinessClearance]);
 
   const handleSubmit = async (e) => {
@@ -189,15 +207,19 @@ export default function RequestForm() {
 
     setLoading(true);
 
-    const payload = {
-      ...form,
-      age: form.age === "" ? "" : Number(form.age),
-      fullName: [form.firstName, form.middleName, form.lastName]
-        .filter(Boolean)
-        .join(" ")
-        .trim(),
-    };
-
+const payload = {
+  ...form,
+  municipalityId: "Pinili",
+  requestSource: isFamilyRequest ? "family_request_form" : "public_form",
+  age: form.age === "" ? "" : Number(form.age),
+  fullName: [form.firstName, form.middleName, form.lastName]
+    .filter(Boolean)
+    .join(" ")
+    .trim(),
+  fullAddress: [form.purok, form.barangayId, "Pinili"]
+    .filter(Boolean)
+    .join(", "),
+};
     const result = await createRequest({
       data: payload,
       user: null,
@@ -210,7 +232,10 @@ export default function RequestForm() {
       return;
     }
 
- try {
+try {
+  const publicBaseUrl =
+    import.meta.env.VITE_PUBLIC_BASE_URL || window.location.origin;
+
   await sendSubmittedEmail({
     to: payload.email,
     applicantName: payload.fullName,
@@ -218,6 +243,8 @@ export default function RequestForm() {
     documentType: payload.documentType,
     purpose: payload.purpose,
     status: "pending",
+    statusUrl: `${publicBaseUrl}/request/status/${result.id}`,
+    familyRequestUrl: `${publicBaseUrl}/?requestFor=family`,
   });
 } catch (error) {
   console.error("Submitted email failed:", error);
@@ -241,8 +268,8 @@ navigate(`/request/status/${result.id}`, { replace: true });
       citizenship: "Filipino",
       contactNumber: "",
       email: "",
-      municipalityId: "",
-      barangayId: "",
+      municipalityId: "Pinili",
+      barangayId: "Upon",
       purok: "",
       fullAddress: "",
       documentType: "",
@@ -250,7 +277,7 @@ navigate(`/request/status/${result.id}`, { replace: true });
       businessName: "",
       businessAddress: "",
       recaptchaVerified: false,
-      requestSource: "public_form",
+      requestSource: isFamilyRequest ? "family_request_form" : "public_form",
     });
   };
 
@@ -288,217 +315,217 @@ navigate(`/request/status/${result.id}`, { replace: true });
             <li>Review your entries before submitting the request.</li>
           </ol>
         </div>
-
+{isFamilyRequest ? (
+  <div className="request-form-guide">
+    <h3>Family or Relative Request</h3>
+    <p>
+      You are submitting this request for a family member or relative. Please
+      provide the applicant's correct details and your relationship to them.
+    </p>
+  </div>
+) : null}
         {submitError ? <div className="request-form-error">{submitError}</div> : null}
         {submitSuccess ? (
           <div className="request-form-success">{submitSuccess}</div>
         ) : null}
 
         <form onSubmit={handleSubmit} className="request-form">
-          <div className="form-section">
-            <div className="form-section-header">
-              <h2>Personal Information</h2>
-              <p>Provide the applicant’s complete personal details.</p>
-            </div>
+        <div className="form-section">
+  <div className="form-section-header">
+    <h2>Personal Information</h2>
+    <p>Provide the applicant’s complete personal details.</p>
+  </div>
 
-            <div className="request-grid three">
-              <div>
-                <label>First Name</label>
-                <input
-                  required
-                  value={form.firstName}
-                  onChange={(e) => setField("firstName", e.target.value)}
-                />
-              </div>
+  {/* Row 1: Names */}
+  <div className="request-grid three">
+    <div>
+      <label>First Name</label>
+      <input
+        required
+        value={form.firstName}
+        onChange={(e) => setField("firstName", e.target.value)}
+      />
+    </div>
+    <div>
+      <label>Middle Name</label>
+      <input
+        required
+        value={form.middleName}
+        onChange={(e) => setField("middleName", e.target.value)}
+      />
+    </div>
+    <div>
+      <label>Last Name</label>
+      <input
+        required
+        value={form.lastName}
+        onChange={(e) => setField("lastName", e.target.value)}
+      />
+    </div>
+  </div>
 
-              <div>
-                <label>Middle Name</label>
-                <input
-                  required
-                  value={form.middleName}
-                  onChange={(e) => setField("middleName", e.target.value)}
-                />
-              </div>
+  {/* Row 2: Sex, Age, Birth Date */}
+  <div className="request-grid three">
+    <div>
+      <label>Sex</label>
+      <div className="inline-radio-group">
+        <label className="inline-radio">
+          <input
+            type="radio"
+            name="sex"
+            value="male"
+            checked={form.sex === "male"}
+            onChange={(e) => setField("sex", e.target.value)}
+            required
+          />
+          <span>Male</span>
+        </label>
+        <label className="inline-radio">
+          <input
+            type="radio"
+            name="sex"
+            value="female"
+            checked={form.sex === "female"}
+            onChange={(e) => setField("sex", e.target.value)}
+            required
+          />
+          <span>Female</span>
+        </label>
+      </div>
+    </div>
+    <div>
+      <label>Age</label>
+      <input
+        required
+        type="number"
+        min="0"
+        value={form.age}
+        onChange={(e) => handleAgeChange(e.target.value)}
+      />
+    </div>
+    <div>
+      <label>Birth Date</label>
+      <input
+        required
+        type="date"
+        value={form.birthDate}
+        onChange={(e) => handleBirthDateChange(e.target.value)}
+      />
+    </div>
+  </div>
 
-              <div>
-                <label>Last Name</label>
-                <input
-                  required
-                  value={form.lastName}
-                  onChange={(e) => setField("lastName", e.target.value)}
-                />
-              </div>
-            </div>
+  {/* Row 3: Civil Status, Citizenship, Contact Number */}
+  <div className="request-grid three">
+    <div>
+      <label>Civil Status</label>
+      <select
+        required
+        value={form.civilStatus}
+        onChange={(e) => setField("civilStatus", e.target.value)}
+      >
+        <option value="">Select civil status</option>
+        {CIVIL_STATUS_OPTIONS.map((item) => (
+          <option key={item} value={item.toLowerCase()}>
+            {item}
+          </option>
+        ))}
+      </select>
+    </div>
+    <div>
+      <label>Citizenship</label>
+      <input
+        required
+        value={form.citizenship}
+        onChange={(e) => setField("citizenship", e.target.value)}
+        placeholder="e.g. Filipino"
+      />
+    </div>
+    <div>
+      <label>Contact Number</label>
+      <input
+        required
+        value={form.contactNumber}
+        onChange={(e) => setField("contactNumber", e.target.value)}
+      />
+    </div>
+  </div>
 
-            <div className="request-grid three">
-              <div>
-                <label>Sex</label>
-                <div className="inline-radio-group">
-                  <label className="inline-radio">
-                    <input
-                      type="radio"
-                      name="sex"
-                      value="male"
-                      checked={form.sex === "male"}
-                      onChange={(e) => setField("sex", e.target.value)}
-                      required
-                    />
-                    <span>Male</span>
-                  </label>
+  {/* Row 4: Email (always visible) */}
+  <div className="request-grid three">
+    <div>
+      <label>Email Address</label>
+      <input
+        required
+        type="email"
+        value={form.email}
+        onChange={(e) => setField("email", e.target.value)}
+      />
+    </div>
+    {/* Placeholder to maintain 3‑column structure */}
+    <div />
+    <div />
+  </div>
 
-                  <label className="inline-radio">
-                    <input
-                      type="radio"
-                      name="sex"
-                      value="female"
-                      checked={form.sex === "female"}
-                      onChange={(e) => setField("sex", e.target.value)}
-                      required
-                    />
-                    <span>Female</span>
-                  </label>
-                </div>
-              </div>
+  {/* Relationship field – ONLY for family requests, full width */}
+  {isFamilyRequest && (
+    <div className="request-grid three">
+      <div>
+        <label>Relationship to Applicant</label>
+        <input
+          required
+          value={form.relationshipToApplicant}
+          onChange={(e) => setField("relationshipToApplicant", e.target.value)}
+          placeholder="e.g. Mother, Father, Sister, Brother, Aunt"
+        />
+      </div>
+      <div />
+      <div />
+    </div>
+  )}
+</div>
 
-              <div>
-                <label>Age</label>
-                <input
-                  required
-                  type="number"
-                  min="0"
-                  value={form.age}
-                  onChange={(e) => handleAgeChange(e.target.value)}
-                />
-              </div>
+         <div className="form-section">
+  <div className="form-section-header">
+    <h2>Address Information</h2>
+    <p>Enter the applicant’s current address and barangay details.</p>
+  </div>
 
-              <div>
-                <label>Birth Date</label>
-                <input
-                  required
-                  type="date"
-                  value={form.birthDate}
-                  onChange={(e) => handleBirthDateChange(e.target.value)}
-                />
-              </div>
-            </div>
+  <div className="request-grid three">
+    <div>
+      <label>Municipality / City</label>
+      <input type="text" value="Pinili" disabled />
+    </div>
 
-            <div className="request-grid three">
-              <div>
-                <label>Civil Status</label>
-                <select
-                  required
-                  value={form.civilStatus}
-                  onChange={(e) => setField("civilStatus", e.target.value)}
-                >
-                  <option value="">Select civil status</option>
-                  {CIVIL_STATUS_OPTIONS.map((item) => (
-                    <option key={item} value={item.toLowerCase()}>
-                      {item}
-                    </option>
-                  ))}
-                </select>
-              </div>
+    <div>
+      
+    <label>Barangay</label>
+      <input type="text" value="Upon" disabled />
+      <input type="hidden" name="barangayId" value="Upon" />
+    </div>
 
-              <div>
-                <label>Citizenship</label>
-                <input
-                  required
-                  value={form.citizenship}
-                  onChange={(e) => setField("citizenship", e.target.value)}
-                  placeholder="e.g. Filipino"
-                />
-              </div>
-
-              <div>
-                <label>Contact Number</label>
-                <input
-                  required
-                  value={form.contactNumber}
-                  onChange={(e) => setField("contactNumber", e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div className="request-grid three">
-              <div>
-                <label>Email Address</label>
-                <input
-                  required
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setField("email", e.target.value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="form-section">
-            <div className="form-section-header">
-              <h2>Address Information</h2>
-              <p>Enter the applicant’s current address and barangay details.</p>
-            </div>
-
-            <div className="request-grid three">
-              <div>
-                <label>Municipality / City</label>
-                <select
-                  required
-                  value={form.municipalityId}
-                  onChange={(e) => handleMunicipalityChange(e.target.value)}
-                >
-                  <option value="">Select municipality / city</option>
-                  {municipalityOptions.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label>Barangay</label>
-                <select
-                  required
-                  value={form.barangayId}
-                  onChange={(e) => setField("barangayId", e.target.value)}
-                  disabled={!form.municipalityId}
-                >
-                  <option value="">Select barangay</option>
-                  {barangayOptions.map((barangay) => (
-                    <option key={barangay} value={barangay}>
-                      {barangay}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div>
-                <label>Sitio / Purok</label>
-                <input
-                  required
-                  value={form.purok}
-                  onChange={(e) => setField("purok", e.target.value)}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label>Full Address</label>
-              <textarea
-                required
-                rows="3"
-                value={form.fullAddress}
-                onChange={(e) => setField("fullAddress", e.target.value)}
-              />
-            </div>
-          </div>
-
+    <div>
+      <label>Sitio / Purok</label>
+      <select
+        required
+        value={form.purok}
+        onChange={(e) => setField("purok", e.target.value)}
+      >
+        <option value="">Select purok</option>
+        {PUROK_OPTIONS.map((item) => (
+          <option key={item} value={item}>
+            {item}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+</div>
           <div className="form-section">
             <div className="form-section-header">
               <h2>Document Request Details</h2>
               <p>Select the requested document and state the purpose clearly.</p>
             </div>
-
+            <input type="hidden" value={form.municipalityId} readOnly />
             <div className="request-grid two">
               <div>
                 <label>Document Type</label>

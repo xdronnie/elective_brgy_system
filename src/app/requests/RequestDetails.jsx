@@ -327,7 +327,10 @@ export default function RequestDetails() {
             <DetailItem label="Resident ID" value={request.residentId} />
             <DetailItem label="Business Name" value={request.businessName} />
             <DetailItem label="Business Address" value={request.businessAddress} />
-            <DetailItem label="Created By" value={request.createdBy} />
+            <DetailItem
+  label="Submitted Via"
+  value={request.createdBy || (request.requestSource === "public_form" ? "Public Form" : "Staff Account")}
+/>
             <DetailItem label="Created At" value={formatTimestamp(request.createdAt)} />
             <DetailItem label="Updated At" value={formatTimestamp(request.updatedAt)} />
             <DetailItem label="Approved At" value={formatTimestamp(request.approvedAt)} />

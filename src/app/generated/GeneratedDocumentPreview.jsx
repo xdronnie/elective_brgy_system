@@ -73,13 +73,16 @@ export default function GeneratedDocumentPreview() {
             <p>Generated document not found.</p>
           ) : (
             <>
-              <div className="generated-doc-meta no-print">
+             {/* <div className="generated-doc-meta hide-on-screen">
                 <h2>{documentData.templateLabel || "Generated Document"}</h2>
                 <p><strong>File Name:</strong> {documentData.fileName || "-"}</p>
                 <p><strong>Reference No:</strong> {documentData.referenceNo || "-"}</p>
+                <p><strong>Res. Cert. No.:</strong> {documentData.resCertNo || "-"}</p>
+                <p><strong>Fees Paid:</strong> {documentData.feesPaid ? `₱${documentData.feesPaid}.00` : "-"}</p>
+                <p><strong>O.R. No.:</strong> {documentData.orNo || "-"}</p>
                 <p><strong>Status:</strong> {documentData.status || "-"}</p>
-              </div>
-
+              </div> */}
+              
               <div
                 className="generated-doc-preview"
                 dangerouslySetInnerHTML={{

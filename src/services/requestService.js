@@ -39,15 +39,17 @@ export const createRequest = async ({ data, user = null }) => {
       updatedAt: serverTimestamp(),
     });
 
-    await createAuditLog({
-      action: "create_request",
-      performedBy: user?.uid || null,
-      performerRole: user?.role || "public",
-      requestId: docRef.id,
-      residentId: data.residentId || null,
-      toStatus: REQUEST_STATUS.DRAFT,
-      remarks: "Request created",
-    });
+    if (user?.uid) {
+      await createAuditLog({
+        action: "create_request",
+        performedBy: user.uid,
+        performerRole: user?.role || "staff",
+        requestId: docRef.id,
+        residentId: data.residentId || null,
+        toStatus: REQUEST_STATUS.DRAFT,
+        remarks: "Request created",
+      });
+    }
 
     return {
       success: true,
@@ -168,6 +170,9 @@ console.log("Status email recipient:", recipientEmail);
 
 if (recipientEmail) {
   try {
+    const publicBaseUrl =
+      import.meta.env.VITE_PUBLIC_BASE_URL || window.location.origin;
+
     await sendStatusUpdateEmail({
       to: recipientEmail,
       applicantName:
@@ -180,6 +185,8 @@ if (recipientEmail) {
       documentType: oldData.documentType || "",
       status: newStatus,
       rejectionReason,
+      statusUrl: `${publicBaseUrl}/request/status/${requestId}`,
+      familyRequestUrl: `${publicBaseUrl}/?requestFor=family`,
     });
   } catch (error) {
     console.error("Status update email failed:", error);
@@ -191,7 +198,6 @@ if (recipientEmail) {
     email: oldData.email,
   });
 }
-
     return { success: true };
   } catch (error) {
     return await handleAppError({
@@ -421,10 +427,7 @@ const createResidentFromRequest = async ({ requestData, user }) => {
 
   return docRef.id;
 };
-export const updatePublicRequest = async ({
-  requestId,
-  data,
-}) => {
+export const updatePublicRequest = async ({ requestId, data }) => {
   try {
     const requestRef = doc(db, "documentRequests", requestId);
     const requestSnap = await getDoc(requestRef);
@@ -460,17 +463,6 @@ export const updatePublicRequest = async ({
       updatedAt: serverTimestamp(),
     });
 
-    await createAuditLog({
-      action: "update_public_request",
-      performedBy: null,
-      performerRole: "public",
-      requestId,
-      residentId: currentData.residentId || null,
-      fromStatus: currentStatus,
-      toStatus: currentStatus,
-      remarks: "Public request updated by requester",
-    });
-
     return { success: true };
   } catch (error) {
     return await handleAppError({
@@ -501,17 +493,6 @@ export const resubmitRequest = async (requestId) => {
       status: REQUEST_STATUS.FOR_APPROVAL,
       rejectionReason: "",
       updatedAt: serverTimestamp(),
-    });
-
-    await createAuditLog({
-      action: "resubmit_request",
-      performedBy: null,
-      performerRole: "public",
-      requestId,
-      residentId: currentData.residentId || null,
-      fromStatus: REQUEST_STATUS.REJECTED,
-      toStatus: REQUEST_STATUS.FOR_APPROVAL,
-      remarks: "Request resubmitted by requester",
     });
 
     return { success: true };
