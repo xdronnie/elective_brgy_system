@@ -10,6 +10,11 @@ It streamlines the entire barangay document request process – from online form
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 ---
+## 📸 Preview
+<img width="1414" height="1000" alt="image" src="https://github.com/user-attachments/assets/30e944da-d1be-44b8-ab07-e3ca242937d5" />
+<img width="1417" height="860" alt="image" src="https://github.com/user-attachments/assets/9f0dcb8e-f5d1-4f86-9355-4a5af7cac9c6" />
+<img width="1917" height="1028" alt="image" src="https://github.com/user-attachments/assets/a13af467-8177-40d6-8128-a86ab94033b6" />
+<img width="1913" height="977" alt="image" src="https://github.com/user-attachments/assets/ecfac8e7-335e-4b56-9a80-71900dfc3261" />
 
 ---
 
