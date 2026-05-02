@@ -47,6 +47,7 @@ It streamlines the entire barangay document request process – from online form
 
 ### 6. Audit Logging
 - Every action (create request, update status, register resident) is logged in Firestore for accountability.
+---
 
 ---
 
@@ -64,42 +65,6 @@ It streamlines the entire barangay document request process – from online form
 
 ---
 
-## 🏗️ Project Structure (simplified)
-elective_brgy_system/
-├── public/ # Static assets
-├── src/
-│ ├── app/
-│ │ ├── auth/ # Login, Register pages
-│ │ ├── dashboard/ # Admin, Encoder, Staff dashboards
-│ │ ├── requests/ # Request list, details, tracking
-│ │ ├── residents/ # Resident management
-│ │ ├── audit/ # Audit log viewer
-│ │ └── public/ # Public request form & tracking
-│ ├── components/
-│ │ ├── common/ # Buttons, inputs, modals, etc.
-│ │ └── layout/ # Header, sidebar, protected route
-│ ├── constants/ # Request statuses, document types, roles
-│ ├── context/ # React context providers
-│ ├── firebase/ # Firebase config & initialization
-│ ├── hooks/ # Custom React hooks
-│ ├── routes/ # Route definitions & protected routes
-│ ├── services/
-│ │ ├── authService.js # Login, logout, password reset
-│ │ ├── requestService.js # CRUD for document requests
-│ │ ├── residentService.js # Resident record management
-│ │ ├── emailService.js # EmailJS integration
-│ │ ├── notificationService.js
-│ │ ├── auditService.js # Audit logging
-│ │ └── documentGenerationService.js
-│ └── utils/ # Helper functions
-├── mailer-worker/ # (Optional) background email worker
-├── server/ # (Optional) backend server
-├── firebase.json # Firebase project configuration
-├── .firebaserc # Firebase project alias
-├── vite.config.js # Vite configuration
-└── package.json
-
----
 
 ## 🚀 Getting Started
 
