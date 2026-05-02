@@ -14,7 +14,8 @@ It streamlines the entire barangay document request process – from online form
 <img width="1414" height="1000" alt="image" src="https://github.com/user-attachments/assets/30e944da-d1be-44b8-ab07-e3ca242937d5" />
 <img width="1417" height="860" alt="image" src="https://github.com/user-attachments/assets/9f0dcb8e-f5d1-4f86-9355-4a5af7cac9c6" />
 <img width="1917" height="1028" alt="image" src="https://github.com/user-attachments/assets/a13af467-8177-40d6-8128-a86ab94033b6" />
-<img width="1913" height="977" alt="image" src="https://github.com/user-attachments/assets/ecfac8e7-335e-4b56-9a80-71900dfc3261" />
+<img width="1910" height="1031" alt="image" src="https://github.com/user-attachments/assets/da9106c3-2d58-4aa9-9018-3403e04f48fa" />
+
 
 ---
 
@@ -64,7 +65,39 @@ It streamlines the entire barangay document request process – from online form
 ---
 
 ## 🏗️ Project Structure (simplified)
-
+elective_brgy_system/
+├── public/ # Static assets
+├── src/
+│ ├── app/
+│ │ ├── auth/ # Login, Register pages
+│ │ ├── dashboard/ # Admin, Encoder, Staff dashboards
+│ │ ├── requests/ # Request list, details, tracking
+│ │ ├── residents/ # Resident management
+│ │ ├── audit/ # Audit log viewer
+│ │ └── public/ # Public request form & tracking
+│ ├── components/
+│ │ ├── common/ # Buttons, inputs, modals, etc.
+│ │ └── layout/ # Header, sidebar, protected route
+│ ├── constants/ # Request statuses, document types, roles
+│ ├── context/ # React context providers
+│ ├── firebase/ # Firebase config & initialization
+│ ├── hooks/ # Custom React hooks
+│ ├── routes/ # Route definitions & protected routes
+│ ├── services/
+│ │ ├── authService.js # Login, logout, password reset
+│ │ ├── requestService.js # CRUD for document requests
+│ │ ├── residentService.js # Resident record management
+│ │ ├── emailService.js # EmailJS integration
+│ │ ├── notificationService.js
+│ │ ├── auditService.js # Audit logging
+│ │ └── documentGenerationService.js
+│ └── utils/ # Helper functions
+├── mailer-worker/ # (Optional) background email worker
+├── server/ # (Optional) backend server
+├── firebase.json # Firebase project configuration
+├── .firebaserc # Firebase project alias
+├── vite.config.js # Vite configuration
+└── package.json
 
 ---
 
